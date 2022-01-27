@@ -1,14 +1,14 @@
 pipeline {
     agent any
     environment {
-        git_credential = "github"
-        aws_credential = "jenkins-s3-push"
-        repo_url = "https://github.com/arunbeniwal008/pipeline-aws-plugin.git"
+        git_credential = "GIT_CREDNETIAL_ID"
+        aws_credential = "AWS_CREDNETIAL_ID"
+        repo_url = "MyRepositoryUrl"
         base_imagename = "base-image"
         api_imagename = "my-api"
         auth_imagename = "my-auth"
-        bucket = "aruns3jenkins"
-        region = "ap-south-1"
+        bucket = "MyBucketName"
+        region = "MyAwsRegion"
         webHook_url = "myWebHookURL"
         api_res_url = "https://${bucket}.s3.${region}.amazonaws.com/${TAG_NAME}/${api_imagename}-${TAG_NAME}.tar.gz"
         auth_res_url = "https://${bucket}.s3.${region}.amazonaws.com/${TAG_NAME}/${auth_imagename}-${TAG_NAME}.tar.gz"
@@ -54,14 +54,14 @@ stages {
                 }
             }
         }
-        /*stage("Zip"){
+        stage("Zip"){
             steps{
                 sh "mkdir ${TAG_NAME}"
                 dir("${TAG_NAME}"){
                     sh "docker save ${api_imagename}:latest > ${api_imagename}-${TAG_NAME}.tar.gz"
                     sh "docker save ${auth_imagename}:latest > ${auth_imagename}-${TAG_NAME}.tar.gz"
                 }
-            }*/
+            }
         }
         stage("Upload"){
             steps{
@@ -91,7 +91,7 @@ stages {
             }
         }
     }
-    /*post {
+    post {
         always {
             cleanWs()
             dir("${env.WORKSPACE}@tmp") {
@@ -107,5 +107,5 @@ stages {
             sh "docker rmi ${api_imagename}"
             sh "docker rmi ${auth_imagename}"
         }
-    }*/
+    }
 }

@@ -62,6 +62,7 @@ stages {
                     s3Upload(file:"${TAG_NAME}", bucket:"${bucket}", path:"${TAG_NAME}/")
                 }    
             }
+            }
             post {
                 success{
                     office365ConnectorSend message: "${notify_text}<br>commit id: ${commitId}", status:"Success Upload", webhookUrl:"${webHook_url}"

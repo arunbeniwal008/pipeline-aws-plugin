@@ -37,32 +37,7 @@ stages {
                 sh "mvn clean install -DskipTests=true -Dmaven.test.failure.ignore=true."
             }
         }
-        stage("Image build"){
-            steps {
-                script {
-                    sh "docker images"
-                    dir("${base_imagename}"){
-                        docker.build "${base_imagename}"
-                    }
-                    dir("${api_imagename}"){
-                        docker.build "${api_imagename}"
-                    }
-                    dir("${auth_imagename}"){
-                        docker.build "${auth_imagename}"
-                    }
-                    sh "docker images"
-                }
-            }
-        }
-        stage("Zip"){
-            steps{
-                sh "mkdir ${TAG_NAME}"
-                dir("${TAG_NAME}"){
-                    sh "docker save ${api_imagename}:latest > ${api_imagename}-${TAG_NAME}.tar.gz"
-                    sh "docker save ${auth_imagename}:latest > ${auth_imagename}-${TAG_NAME}.tar.gz"
-                }
-            }
-        }
+      }
         stage("Upload"){
             steps{
                 withAWS(region:"${region}", credentials:"${aws_credential}){

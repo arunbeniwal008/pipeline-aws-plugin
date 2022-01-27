@@ -1,11 +1,15 @@
 pipeline {
     agent any
     environment {
-        git_credential = "github"
-        aws_credential = "jenkins-s3-push"
-        repo_url = "https://github.com/arunbeniwal008/pipeline-aws-plugin.git"
-        bucket = "aruns3jenkins"
-        region = "ap-south-1"
+        git_credential = "GIT_CREDNETIAL_ID"
+        aws_credential = "AWS_CREDNETIAL_ID"
+        repo_url = "MyRepositoryUrl"
+        base_imagename = "base-image"
+        api_imagename = "my-api"
+        auth_imagename = "my-auth"
+        bucket = "MyBucketName"
+        region = "MyAwsRegion"
+        webHook_url = "myWebHookURL"
           }
     
     tools {

@@ -1,14 +1,14 @@
-pipeline {
+    pipeline {
     agent any
     environment {
-        git_credential = "GIT_CREDNETIAL_ID"
-        aws_credential = "AWS_CREDNETIAL_ID"
-        repo_url = "MyRepositoryUrl"
+        git_credential = "github"
+        aws_credential = "jenkins-s3-push"
+        repo_url = "https://github.com/arunbeniwal008/pipeline-aws-plugin.git"
         base_imagename = "base-image"
         api_imagename = "my-api"
         auth_imagename = "my-auth"
-        bucket = "MyBucketName"
-        region = "MyAwsRegion"
+        bucket = "aruns3jenkins"
+        region = "Asia Pacific (Mumbai) ap-south-1"
         webHook_url = "myWebHookURL"
         api_res_url = "https://${bucket}.s3.${region}.amazonaws.com/${TAG_NAME}/${api_imagename}-${TAG_NAME}.tar.gz"
         auth_res_url = "https://${bucket}.s3.${region}.amazonaws.com/${TAG_NAME}/${auth_imagename}-${TAG_NAME}.tar.gz"
@@ -37,7 +37,32 @@ stages {
                 sh "mvn clean install -DskipTests=true -Dmaven.test.failure.ignore=true."
             }
         }
-      }
+        stage("Image build"){
+            steps {
+                script {
+                    sh "docker images"
+                    dir("${base_imagename}"){
+                        docker.build "${base_imagename}"
+                    }
+                    dir("${api_imagename}"){
+                        docker.build "${api_imagename}"
+                    }
+                    dir("${auth_imagename}"){
+                        docker.build "${auth_imagename}"
+                    }
+                    sh "docker images"
+                }
+            }
+        }
+        stage("Zip"){
+            steps{
+                sh "mkdir ${TAG_NAME}"
+                dir("${TAG_NAME}"){
+                    sh "docker save ${api_imagename}:latest > ${api_imagename}-${TAG_NAME}.tar.gz"
+                    sh "docker save ${auth_imagename}:latest > ${auth_imagename}-${TAG_NAME}.tar.gz"
+                }
+            }
+        }
         stage("Upload"){
             steps{
                 withAWS(region:"${region}", credentials:"${aws_credential}){
